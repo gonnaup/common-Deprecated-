@@ -31,60 +31,92 @@ public class Result<T> implements Serializable {
     private T data;
 
     /**
-     * 创建构建器
+     * 私有构造器
      *
-     * @param <T>
+     * @param code
+     * @param message
+     * @param data
+     */
+    private Result(String code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
+    /**
+     * 返回构建器
+     * @param code
      * @return
      */
-    public static <T> ResultBuilder<T> builder() {
-        return new ResultBuilder<>();
+    public static ResultBuilder code(String code) {
+        return new ResultBuilder().code(code);
     }
 
     /**
      * build
-     *
-     * @param <T>
      */
-    public static final class ResultBuilder<T> {
+    public static final class ResultBuilder {
+
         private String code;
+
         private String message;
-        private T data;
 
         private ResultBuilder() {
         }
 
-        public ResultBuilder<T> withCode(String code) {
+        /**
+         * 设置返回码
+         *
+         * @param code
+         * @return
+         */
+        private ResultBuilder code(String code) {
             this.code = code;
             return this;
         }
 
-        public ResultBuilder<T> withMessage(String message) {
+        /**
+         * 设置返回消息
+         *
+         * @param message
+         * @return
+         */
+        public ResultBuilder message(String message) {
             this.message = message;
             return this;
         }
 
-        public ResultBuilder<T> success() {
+        /**
+         * 设置成功消息
+         *
+         * @return
+         */
+        public ResultBuilder success() {
             this.message = Message.SUCCESS.description();
             return this;
         }
 
-        public ResultBuilder<T> fail() {
+        /**
+         * 设置失败消息
+         *
+         * @return
+         */
+        public ResultBuilder fail() {
             this.message = Message.FAIL.description();
             return this;
         }
 
-        public ResultBuilder<T> withData(T data) {
-            this.data = data;
-            return this;
+        /**
+         * 设置返回数据并返回结果对象
+         *
+         * @param data
+         * @param <T>
+         * @return 结果对象
+         */
+        public <T> Result<T> data(T data) {
+            return new Result<>(code, message == null ? "" : message, data);
         }
 
-        public Result<T> build() {
-            Result<T> result = new Result<T>();
-            result.code = this.code == null ? "0" : this.code;
-            result.message = this.message == null ? "" : this.message;
-            result.data = this.data;
-            return result;
-        }
     }
 
     public enum Message {
